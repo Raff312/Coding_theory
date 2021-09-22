@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 
 namespace Lab1_ShamirsCode {
     public static class Utils {
-        public static T Convert<T>(this string? input) {
+        public static T Convert<T>(this string input) {
             var converter = TypeDescriptor.GetConverter(typeof(T));
             if (converter == null) {
                 throw new Exception();
@@ -18,67 +20,43 @@ namespace Lab1_ShamirsCode {
                 Console.Write(msg);
                 var userAnswer = Console.ReadLine();
                 try {
-                    return Utils.Convert<T>(userAnswer);
+                    return userAnswer.Convert<T>();
                 } catch (Exception) {
                     ConsoleTools.WriteLine(ConsoleColor.Red, "Invalid value type. Try again...");
                 }
             }
         }
-        
-        public static int GetMutuallySimple(int value) {
-            for (var i = 2; i < value; i++) {
-                if (value % i == 1) {
-                    return i;
-                }
-            }
-
-            throw new System.Exception($"There is no mutually simple number for value = {value}");
-        }
-
-        public static (int gcd, int t) ExtendedGcd(int a, int b) {
-            if (a < b) {
-                Swap<int>(ref a, ref b);
-            }
-
-            var u = (u1: a, u2: 0);
-            var v = (v1: b, v2: 1);
-            while (v.v1 != 0) {
-                var r = u.u1 / v.v1;
-                var t = (u.u1 % v.v1, u.u2 - r * v.v2);
-                u = v;
-                v = t;
-            }
-
-            if (u.u2 < 0) {
-                u.u2 += a;
-            }
-
-            return u;
-        }
-
-        public static void Swap<T> (ref T lhs, ref T rhs) {
-            T temp = lhs;
-            lhs = rhs;
-            rhs = temp;
-        }
 
         public static string StrToNumbers(string str) {
-            var result = string.Empty;
-            foreach(var ch in str.ToCharArray()) {
-                result += RuCharToInt(ch);
-            }
-
-            return result;
+            return str.ToCharArray().Aggregate(string.Empty, (current, ch) => current + RuCharToInt(ch));
         }
 
         private static string RuCharToInt(char ch) {
-            return ch != ' ' ? (char.ToUpper(ch) - ('A' - 1)).ToString("00") : "00";
+            return ch != ' ' ? (char.ToUpper(ch) - ('А' - 1)).ToString("00") : "00";
         }
 
-        public static List<string>? SplitBy(string str, int count) {
-            if (str.Length < count) return null;
+        public static string NumbersToStr(string numberStr) {
+            var numbersList = SplitBy(numberStr, 2);
+            return numbersList.Aggregate(string.Empty, (current, item) => current += RuNumberToChar(Utils.Convert<int>(item)))
+                .ToLower().Trim();
+        }
 
+        private static char RuNumberToChar(int num) {
+            return (char)(num + 'А' - 1);
+        }
+
+        public static string EncodeStrCode(string strCode, int simpleNum, int exponent) {
+            var splittedStrCode = SplitBy(strCode, 2);
+            var encodedSplittedStrCode = EncodeStrParts(splittedStrCode, simpleNum, exponent);
+            return encodedSplittedStrCode.Aggregate(string.Empty, (current, item) => current += item);
+        }
+
+        private static List<string> SplitBy(string str, int count) {
             var result = new List<string>();
+            
+            if (str.Length < count) {
+                return result;
+            }
 
             var countOfParts = (int)Math.Ceiling(str.Length / (double)count);
 
@@ -92,6 +70,20 @@ namespace Lab1_ShamirsCode {
             }
 
             return result;
+        }
+
+        private static List<string> EncodeStrParts(List<string> parts, int simpleNum, int exponent) {
+            var result = new List<string>();
+            foreach (var str in parts) {
+                var num = Utils.Convert<int>(str);
+                var encodeNum = BigInteger.ModPow(num, exponent, simpleNum);
+                result.Add(encodeNum.ToString("00"));
+            }
+            return result;
+        }
+
+        public static string ListToStr(List<string> list) {
+            return list == null ? string.Empty : list.Aggregate(string.Empty, (current, item) => current + (item + "\t"));
         }
     }
 }
