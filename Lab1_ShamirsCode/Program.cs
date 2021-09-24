@@ -6,22 +6,20 @@ namespace Lab1_ShamirsCode {
             try {
                 Console.OutputEncoding = Console.InputEncoding = System.Text.Encoding.Unicode;
 
-                var userStr = "наступать";
-                //var userStr = Utils.GetValueFromUser<string>("Введите строку: ");
-                Console.WriteLine($"\nНачальная строка: {userStr}");
+                var userStr = Utils.GetValueFromUser<string>("\nВведите строку: ");
 
                 var userStrCode = Utils.StrToNumbers(userStr);
-                Console.WriteLine($"Ее код: {userStrCode}");
+                Console.WriteLine($"Код: {userStrCode}");
 
-                var p = 101;
+                var p = Utils.GetValueFromUser<int>("\nВведите простое число: ");
                 var s = MathUtils.GetMutuallySimpleNumber(p - 1);
                 var t = MathUtils.ExtendedGcd(s, p - 1).t;
                 Console.WriteLine($"\np = {p}\ns = {s}\nt = {t}");
 
-                var encodedUserStr = Utils.EncodeStrCode(userStrCode, p, s);
-                Console.WriteLine($"Кодированное сообщение: {encodedUserStr}");
+                var encodedUserStr = Utils.TransformStrCode(userStrCode, p, s, true);
+                Console.WriteLine($"\nКодированное сообщение: {encodedUserStr}");
 
-                var decodedUserStr = Utils.EncodeStrCode(encodedUserStr, p, t);
+                var decodedUserStr = Utils.TransformStrCode(encodedUserStr, p, t, false);
                 Console.WriteLine($"\nДекодированное сообщение: {decodedUserStr}");
                 Console.WriteLine($"Декодированная строка: {Utils.NumbersToStr(decodedUserStr)}\n");
             } catch (Exception e) {

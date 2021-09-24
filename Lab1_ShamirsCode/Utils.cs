@@ -42,12 +42,12 @@ namespace Lab1_ShamirsCode {
         }
 
         private static char RuNumberToChar(int num) {
-            return (char)(num + 'А' - 1);
+            return num == 0 ? ' ' : (char)(num + 'А' - 1);
         }
 
-        public static string EncodeStrCode(string strCode, int simpleNum, int exponent) {
-            var splittedStrCode = SplitBy(strCode, 2);
-            var encodedSplittedStrCode = EncodeStrParts(splittedStrCode, simpleNum, exponent);
+        public static string TransformStrCode(string strCode, int simpleNum, int exponent, bool encode) {
+            var splittedStrCode = SplitBy(strCode, encode ? 2 : simpleNum.ToString().Length);
+            var encodedSplittedStrCode = TransformStrParts(splittedStrCode, simpleNum, exponent, encode);
             return encodedSplittedStrCode.Aggregate(string.Empty, (current, item) => current += item);
         }
 
@@ -72,18 +72,29 @@ namespace Lab1_ShamirsCode {
             return result;
         }
 
-        private static List<string> EncodeStrParts(List<string> parts, int simpleNum, int exponent) {
+        private static List<string> TransformStrParts(List<string> parts, int simpleNum, int exponent, bool encode) {
+            var format = GetFormat(simpleNum);
             var result = new List<string>();
             foreach (var str in parts) {
                 var num = Utils.Convert<int>(str);
                 var encodeNum = BigInteger.ModPow(num, exponent, simpleNum);
-                result.Add(encodeNum.ToString("00"));
+                result.Add(encodeNum.ToString(encode ? format : "00"));
             }
             return result;
         }
 
         public static string ListToStr(List<string> list) {
             return list == null ? string.Empty : list.Aggregate(string.Empty, (current, item) => current + (item + "\t"));
+        }
+
+        private static string GetFormat(int num) {
+            var digitsNum = num.ToString().Length;
+            var result = string.Empty;
+            for (var i = 0; i < digitsNum; i++) {
+                result += "0";
+            }
+
+            return result;
         }
     }
 }

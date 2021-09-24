@@ -2,12 +2,26 @@ namespace Lab1_ShamirsCode {
     public static class MathUtils {
         public static int GetMutuallySimpleNumber(int value) {
             for (var i = 2; i < value; i++) {
-                if (value % i == 1) {
+                if (Gcd(value, i) == 1) {
                     return i;
                 }
             }
 
-            return value;
+            return 13;
+        }
+
+        private static int Gcd(int a, int b) {
+            if (a < b) {
+                Swap<int>(ref a, ref b);
+            }
+
+            while (b != 0) {
+                var r = a % b;
+                a = b;
+                b = r;
+            }
+
+            return a;
         }
 
         public static (int gcd, int t) ExtendedGcd(int a, int b) {
