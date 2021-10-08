@@ -44,6 +44,10 @@ namespace Lab2_HammingCode {
         }
 
         public static void FixBit(ref string data, int pos) {
+            if (pos < 0) {
+                return;
+            }
+            
             var builder = new StringBuilder(data);
             builder.Remove(pos, 1);
             builder.Insert(pos, data[pos] == '0' ? '1' : '0');
