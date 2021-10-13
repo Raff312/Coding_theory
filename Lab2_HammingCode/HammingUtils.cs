@@ -44,7 +44,12 @@ namespace Lab2_HammingCode {
         }
 
         public static int DefineRedundantBitsCount(string data) {
-            return (int)Math.Floor(Math.Log2(data.Length) + 1);
+            var result = 0;
+            while (Math.Pow(2, result) < (data.Length + result + 1)) {
+                result++;
+            }
+
+            return result;
         }
 
         private static bool IsPowerOfTwo(int num) {
